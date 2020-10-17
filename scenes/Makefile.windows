@@ -1,16 +1,12 @@
-
-BLENDER="C:\Program Files\Blender Foundation\Blender 2.90\blender.exe"
+BLENDER="D:\blender-2.90.0-windows64\blender.exe"
 DIST=../dist
 
 all : \
-    $(DIST)/phone-bank.pnct \
-    $(DIST)/phone-bank.scene \
+    $(DIST)/tank_survive.pnct \
+    $(DIST)/tank_survive.scene \
 
-$(DIST)/phone-bank.scene : phone-bank.blend export-scene.py
-    $(BLENDER) --background --python export-scene.py -- "phone-bank.blend:Platforms" "$(DIST)/phone-bank.scene"
+$(DIST)/tank_survive.scene : TankSurvive.blend export-scene.py
+    $(BLENDER) --background --python export-scene.py -- "TankSurvive.blend:Scene" "$(DIST)/tank_survive.scene"
 
-$(DIST)/phone-bank.pnct : phone-bank.blend export-meshes.py
-    $(BLENDER) --background --python export-meshes.py -- "phone-bank.blend:Platforms" "$(DIST)/phone-bank.pnct" 
-
-$(DIST)/phone-bank.w : phone-bank.blend export-walkmeshes.py
-    $(BLENDER) --background --python export-walkmeshes.py -- "phone-bank.blend:WalkMeshes" "$(DIST)/phone-bank.w" 
+$(DIST)/tank_survive.pnct : TankSurvive.blend export-meshes.py
+    $(BLENDER) --background --python export-meshes.py -- "TankSurvive.blend" "$(DIST)/tank_survive.pnct" 
