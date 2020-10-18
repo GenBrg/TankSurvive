@@ -16,23 +16,31 @@ class Tank {
 		float turret_yaw_ { 0.0f };
 
 		Scene::Drawable tank_barrel_;
-		Scene::Transform barrel_pitch_;
+		Scene::Transform barrel_rotation_;
+		float barrel_pitch_ { 0.0f };
 		Scene& scene_;
 
 		float velocity_ {0.0f};
 		float rotation_force_ {0.0f};
 		float external_force_ {0.0f};
 
+		float target_turret_yaw_ { 0.0f };
+		float target_barrel_pitch_ { 0.0f };
+
 		void SetPosition();
 
 	public:
 		inline static constexpr float kMaxSpeed = 10.0f;
 		inline static constexpr float kFraction = 5.0f;
+		inline static constexpr float kTurretRotationSpeed = glm::radians(20.0f);
+		inline static constexpr float kBarrelRotationSpeed = glm::radians(15.0f);
+		inline static constexpr float kMaxBarrelPitch = glm::radians(15.0f);
+		inline static constexpr float kMinBarrelPitch = glm::radians(0.0f);
 
 		Tank(Scene& scene, const glm::vec3& initial_pos);
 
-		void TargetTurret(const glm::vec3& target_pos);
-		void AdjustBarrel();
+		void TargetTurret(float target_yaw) { target_turret_yaw_ = target_yaw; }
+		void AdjustBarrel(float target_pitch) { target_barrel_pitch_ = glm::clamp(target_pitch, kMinBarrelPitch, kMaxBarrelPitch); }
 		
 		void MoveForward() { external_force_ = 10.0f; }
 		void MoveBackward() { external_force_ = -10.0f; }

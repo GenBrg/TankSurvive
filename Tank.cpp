@@ -21,8 +21,8 @@ scene_(scene)
 
 	tank_barrel_.pipeline = lit_color_texture_program_pipeline;
 	tank_barrel_.pipeline.mesh = &tank_survive_meshes->lookup("TankBarrel");
-	barrel_pitch_.parent = &turret_rotation_;
-	tank_barrel_.transform = &barrel_pitch_;
+	barrel_rotation_.parent = &turret_rotation_;
+	tank_barrel_.transform = &barrel_rotation_;
 
 	at_ = walkmesh->nearest_walk_point(initial_pos);
 	root_transform_.position = walkmesh->to_world_point(at_);
@@ -38,7 +38,7 @@ void Tank::AttachCamera(Scene::Camera* camera)
 {
 	assert(camera);
 	camera->transform->parent = &root_rotation_;
-	camera->transform->position = glm::vec3(0.0f, -2.0f, 2.5f);
+	camera->transform->position = glm::vec3(0.0f, 0.0f, 2.5f);
 
 	camera->up = walkmesh->to_world_smooth_normal(at_);
 	camera->yaw = 0.0f;
@@ -81,9 +81,38 @@ void Tank::Update(float elapsed)
 
 	root_transform_.position = walkmesh->to_world_point(at_);
 
-	// Turn
+	// Turn body
 	root_rotation_.rotation = glm::rotation(glm::vec3(0.0f, 1.0f, 0.0f), GetFaceVector());
 
 	external_force_ = 0.0f;
 	rotation_force_ = 0.0f;
+
+	// Turn turret
+	float turn_amount = kTurretRotationSpeed * elapsed;
+	if (std::abs(target_turret_yaw_ - turret_yaw_) <= turn_amount) {
+		turret_yaw_ = target_turret_yaw_;
+	} else {
+		if (target_turret_yaw_ > turret_yaw_) {
+			turret_yaw_ += turn_amount;
+		} else {
+			turret_yaw_ -= turn_amount;
+		}
+	}
+
+	turret_rotation_.rotation = glm::angleAxis(turret_yaw_, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	// Turn barrel
+	turn_amount = kBarrelRotationSpeed * elapsed;
+	if (std::abs(barrel_pitch_ - target_barrel_pitch_) <= turn_amount) {
+		barrel_pitch_ = target_barrel_pitch_;
+	} else {
+		if (target_barrel_pitch_ > barrel_pitch_) {
+			barrel_pitch_ += turn_amount;
+		} else {
+			barrel_pitch_ -= turn_amount;
+		}
+	}
+
+	barrel_rotation_.rotation = glm::angleAxis(barrel_pitch_, glm::vec3(1.0f, 0.0f, 0.0f));
 }
+

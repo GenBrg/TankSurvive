@@ -98,10 +98,12 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			// 	* glm::angleAxis(motion.y * player.camera->fovy, glm::vec3(1.0f, 0.0f, 0.0f))
 			// );
 
-			player.camera->yaw -= motion.x * player.camera->fovy;
-			player.camera->pitch = glm::clamp(player.camera->pitch + motion.y * player.camera->fovy, -0.25f * 3.1415926f, 0.25f * 3.1415926f);
+			player.camera->yaw = glm::clamp(player.camera->yaw - motion.x * player.camera->fovy, glm::radians(-179.0f), glm::radians(179.0f));;
+			player.camera->pitch = glm::clamp(player.camera->pitch + motion.y * player.camera->fovy, glm::radians(-45.0f), glm::radians(45.0f));
 			player.camera->up = player.tank_.GetUpVector();
 			player.camera->UpdateCameraRotation();
+			player.tank_.TargetTurret(player.camera->yaw);
+			player.tank_.AdjustBarrel(player.camera->pitch);
 			// glm::vec3 up = player.tank_.GetUpVector();
 			// player.camera->transform->rotation = glm::angleAxis(-motion.x * player.camera->fovy, up) * player.camera->transform->rotation;
 
