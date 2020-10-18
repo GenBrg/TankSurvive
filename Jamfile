@@ -124,6 +124,7 @@ COMMON_NAMES =
 	Mode
 	GL
 	Load
+	util
 	;
 
 LOCATE_TARGET = objs ; #put objects in 'objs' directory

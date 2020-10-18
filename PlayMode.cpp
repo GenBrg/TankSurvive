@@ -7,6 +7,7 @@
 #include "Load.hpp"
 #include "gl_errors.hpp"
 #include "data_path.hpp"
+#include "util.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -32,6 +33,27 @@ Load< Scene > tank_survive_scene(LoadTagDefault, []() -> Scene const * {
 	});
 });
 
+Load< MeshBuffer > phonebank_meshes(LoadTagDefault, []() -> MeshBuffer const * {
+	MeshBuffer *ret = new MeshBuffer(data_path("phone-bank.pnct"));
+	ret->make_vao_for_program(lit_color_texture_program->program);
+	return ret;
+});
+
+Load< Scene > phonebank_scene(LoadTagDefault, []() -> Scene const * {
+	return new Scene(data_path("phone-bank.scene"), [&](Scene &scene, Scene::Transform *transform, std::string const &mesh_name){
+		Mesh const &mesh = phonebank_meshes->lookup(mesh_name);
+
+		scene.drawables.emplace_back(transform);
+		Scene::Drawable &drawable = scene.drawables.back();
+
+		drawable.pipeline = lit_color_texture_program_pipeline;
+		drawable.pipeline.mesh = &mesh;
+
+	});
+});
+
+
+
 WalkMesh const *walkmesh = nullptr;
 Load< WalkMeshes > phonebank_walkmeshes(LoadTagDefault, []() -> WalkMeshes const * {
 	WalkMeshes *ret = new WalkMeshes(data_path("phone-bank.w"));
@@ -39,7 +61,7 @@ Load< WalkMeshes > phonebank_walkmeshes(LoadTagDefault, []() -> WalkMeshes const
 	return ret;
 });
 
-PlayMode::PlayMode() : scene(*tank_survive_scene) {
+PlayMode::PlayMode() : scene(*phonebank_scene) {
 	//create a player transform:
 	scene.transforms.emplace_back();
 	player.transform = &scene.transforms.back();
@@ -60,7 +82,6 @@ PlayMode::PlayMode() : scene(*tank_survive_scene) {
 
 	//start player walking at nearest walk point:
 	player.at = walkmesh->nearest_walk_point(player.transform->position);
-
 }
 
 PlayMode::~PlayMode() {
@@ -156,6 +177,7 @@ void PlayMode::update(float elapsed) {
 			float time;
 			walkmesh->walk_in_triangle(player.at, remain, &end, &time);
 			player.at = end;
+
 			if (time == 1.0f) {
 				//finished within triangle:
 				remain = glm::vec3(0.0f);

@@ -16,6 +16,8 @@ struct WalkPoint {
 	//NOTE: by convention, if WalkPoint is on an edge, indices/weights will be arranged so that weights.z will be 0.0.
 	WalkPoint(glm::uvec3 const &indices_, glm::vec3 const &weights_) : indices(indices_), weights(weights_) { }
 	WalkPoint() = default;
+
+	std::string ToString() const;
 };
 
 struct WalkMesh {
