@@ -2,6 +2,7 @@
 
 #include "read_write_chunk.hpp"
 #include "util.hpp"
+#include "data_path.hpp"
 
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -307,4 +308,69 @@ std::string WalkPoint::ToString() const
 	oss << "weights: " << weights[0] << " " << weights[1] << " " << weights[2];
 
 	return oss.str();
+}
+
+WalkMesh const *walkmesh = nullptr;
+
+Load< WalkMeshes > tank_survive_walkmeshes(LoadTagDefault, []() -> WalkMeshes const * {
+	WalkMeshes *ret = new WalkMeshes(data_path("tank_survive.w"));
+	walkmesh = &ret->lookup("WalkMesh");
+	return ret;
+});
+
+bool WalkMesh::walk(WalkPoint& start, glm::vec3 step) const
+{
+	bool hit_wall = false;
+
+	//using a for() instead of a while() here so that if walkpoint gets stuck in
+	// some awkward case, code will not infinite loop:
+	for (uint32_t iter = 0; iter < 10; ++iter) {
+		if (step == glm::vec3(0.0f)) break;
+		WalkPoint tmp_end;
+		float time;
+		walkmesh->walk_in_triangle(start, step, &tmp_end, &time);
+		start = tmp_end;
+
+		if (time == 1.0f) {
+			//finished within triangle:
+			step = glm::vec3(0.0f);
+			break;
+		}
+		//some step remains:
+		step *= (1.0f - time);
+		//try to step over edge:
+		glm::quat rotation;
+		if (walkmesh->cross_edge(start, &tmp_end, &rotation)) {
+			//stepped to a new triangle:
+			start = tmp_end;
+			//rotate step to follow surface:
+			step = rotation * step;
+		} else {
+			//ran into a wall, bounce / slide along it:
+			hit_wall = true;
+
+			glm::vec3 const &a = walkmesh->vertices[start.indices.x];
+			glm::vec3 const &b = walkmesh->vertices[start.indices.y];
+			glm::vec3 const &c = walkmesh->vertices[start.indices.z];
+			glm::vec3 along = glm::normalize(b-a);
+			glm::vec3 normal = glm::normalize(glm::cross(b-a, c-a));
+			glm::vec3 in = glm::cross(normal, along);
+
+			//check how much 'remain' is pointing out of the triangle:
+			float d = glm::dot(step, in);
+			if (d < 0.0f) {
+				//bounce off of the wall:
+				step += (-1.25f * d) * in;
+			} else {
+				//if it's just pointing along the edge, bend slightly away from wall:
+				step += 0.01f * d * in;
+			}
+		}
+	}
+
+	if (step != glm::vec3(0.0f)) {
+		std::cout << "NOTE: code used full iteration budget for walking." << std::endl;
+	}
+
+	return hit_wall;
 }

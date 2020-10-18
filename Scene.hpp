@@ -12,6 +12,7 @@
 
 #include "GL.hpp"
 #include "Mesh.hpp"
+#include "Load.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -87,6 +88,12 @@ struct Scene {
 		Transform * transform;
 		//NOTE: cameras are directed along their -z axis
 
+		float yaw;
+		float pitch;
+		glm::vec3 up;
+
+		void UpdateCameraRotation();
+
 		//perspective camera parameters:
 		float fovy = glm::radians(60.0f); //vertical fov (in radians)
 		float aspect = 1.0f; //x / y
@@ -152,3 +159,6 @@ struct Scene {
 	//... as a set() function that optionally returns the transform->transform mapping:
 	void set(Scene const &, std::unordered_map< Transform const *, Transform * > *transform_map = nullptr);
 };
+
+extern Load< MeshBuffer > tank_survive_meshes;
+extern Load< Scene > tank_survive_scene;

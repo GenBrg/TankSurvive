@@ -2,10 +2,33 @@
 
 #include "gl_errors.hpp"
 #include "read_write_chunk.hpp"
+#include "data_path.hpp"
+#include "LitColorTextureProgram.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <fstream>
+
+
+Load< MeshBuffer > tank_survive_meshes(LoadTagDefault, []() -> MeshBuffer const * {
+	MeshBuffer* ret = new MeshBuffer(data_path("tank_survive.pnct"));
+	ret->make_vao_for_program(lit_color_texture_program->program);
+	return ret;
+});
+
+
+Load< Scene > tank_survive_scene(LoadTagDefault, []() -> Scene const * {
+	return new Scene(data_path("tank_survive.scene"), [&](Scene &scene, Scene::Transform *transform, std::string const &mesh_name){
+		Mesh const &mesh = tank_survive_meshes->lookup(mesh_name);
+
+		scene.drawables.emplace_back(transform);
+		Scene::Drawable &drawable = scene.drawables.back();
+
+		drawable.pipeline = lit_color_texture_program_pipeline;
+		drawable.pipeline.mesh = &mesh;
+	});
+});
 
 //-------------------------
 
@@ -382,4 +405,12 @@ void Scene::Drawable::Draw(glm::mat4 const &world_to_clip, glm::mat4x3 const &wo
 		}
 	}
 	glActiveTexture(GL_TEXTURE0);
+}
+
+void Scene::Camera::UpdateCameraRotation()
+{
+	transform->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+	transform->rotation = glm::rotation(glm::vec3(0.0f, 1.0f, 0.0f), up);
+	transform->rotation = glm::angleAxis(pitch, transform->rotation * glm::vec3(1.0f, 0.0f, 0.0f)) * transform->rotation;
+	transform->rotation = glm::angleAxis(yaw, up) * transform->rotation;
 }

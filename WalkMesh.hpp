@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Load.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp> //allows the use of 'uvec2' as an unordered_map key
 
@@ -66,6 +68,8 @@ struct WalkMesh {
 		glm::quat *rotation     //[out] rotation over edge
 	) const;
 
+	bool walk(WalkPoint& start, glm::vec3 step) const;
+
 	//used to read back results of walking:
 	glm::vec3 to_world_point(WalkPoint const &wp) const {
 		//if you were looking here for the lesson solution, well, here you go:
@@ -104,3 +108,5 @@ struct WalkMeshes {
 	//internals:
 	std::unordered_map< std::string, WalkMesh > meshes;
 };
+
+extern WalkMesh const *walkmesh;

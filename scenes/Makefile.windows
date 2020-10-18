@@ -4,9 +4,13 @@ DIST=../dist
 all : \
     $(DIST)/tank_survive.pnct \
     $(DIST)/tank_survive.scene \
+    $(DIST)/tank_survive.w \
 
 $(DIST)/tank_survive.scene : TankSurvive.blend export-scene.py
     $(BLENDER) --background --python export-scene.py -- "TankSurvive.blend:Scene" "$(DIST)/tank_survive.scene"
 
 $(DIST)/tank_survive.pnct : TankSurvive.blend export-meshes.py
     $(BLENDER) --background --python export-meshes.py -- "TankSurvive.blend" "$(DIST)/tank_survive.pnct" 
+
+$(DIST)/tank_survive.w : TankSurvive.blend export-walkmeshes.py
+    $(BLENDER) --background --python export-walkmeshes.py -- "TankSurvive.blend:WalkMesh" "$(DIST)/tank_survive.w" 

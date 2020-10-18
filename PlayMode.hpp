@@ -2,6 +2,7 @@
 
 #include "Scene.hpp"
 #include "WalkMesh.hpp"
+#include "Tank.hpp"
 
 #include <glm/glm.hpp>
 
@@ -25,15 +26,18 @@ struct PlayMode : Mode {
 		uint8_t pressed = 0;
 	} left, right, down, up;
 
+	inline static constexpr glm::vec3 kPlayerInitialPos { -30.0f, 50.0f, 0.0f };
+
 	//local copy of the game scene (so code can change it during gameplay):
 	Scene scene;
 
 	//player info:
 	struct Player {
-		WalkPoint at;
-		//transform is at player's feet and will be yawed by mouse left/right motion:
-		Scene::Transform *transform = nullptr;
+		Tank tank_;
+
 		//camera is at player's head and will be pitched by mouse up/down motion:
 		Scene::Camera *camera = nullptr;
+
+		Player(const glm::vec3& initial_pos, Scene& scene);
 	} player;
 };
