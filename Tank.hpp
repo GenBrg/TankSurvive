@@ -3,6 +3,8 @@
 #include "Scene.hpp"
 #include "WalkMesh.hpp"
 
+#include <chrono>
+
 class Tank {
 	private:
 		Scene::Drawable tank_body_;
@@ -27,11 +29,12 @@ class Tank {
 		float target_turret_yaw_ { 0.0f };
 		float target_barrel_pitch_ { 0.0f };
 
-		void SetPosition();
+		std::chrono::high_resolution_clock::time_point last_fire_time;
 
 	public:
 		inline static constexpr float kMaxSpeed = 10.0f;
 		inline static constexpr float kFraction = 5.0f;
+		inline static constexpr std::chrono::milliseconds kFireCoolDown{ 3000 };
 		inline static constexpr float kTurretRotationSpeed = glm::radians(20.0f);
 		inline static constexpr float kBarrelRotationSpeed = glm::radians(15.0f);
 		inline static constexpr float kMaxBarrelPitch = glm::radians(15.0f);
@@ -51,7 +54,8 @@ class Tank {
 
 		void AttachCamera(Scene::Camera* camera);
 
-		void Fire();
+		void Fire(float initial_speed);
+		bool CanFire() const;
 
 		void Update(float elapsed);
 		void Draw();

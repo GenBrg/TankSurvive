@@ -126,6 +126,7 @@ COMMON_NAMES =
 	Load
 	util
 	Tank
+	TankShell
 	;
 
 LOCATE_TARGET = objs ; #put objects in 'objs' directory

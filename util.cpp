@@ -22,4 +22,12 @@ namespace util
 		}
 		std::cout << std::endl;
 	}
+
+	void PrintQuat(const glm::quat& quat)
+	{
+		for (int i = 0; i < 4; ++i) {
+			std::cout << quat[i] << " ";
+		}
+		std::cout << std::endl;
+	}
 }

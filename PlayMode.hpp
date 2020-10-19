@@ -26,6 +26,8 @@ struct PlayMode : Mode {
 		uint8_t pressed = 0;
 	} left, right, down, up;
 
+	bool isPoweringUp { false };
+
 	inline static constexpr glm::vec3 kPlayerInitialPos { -30.0f, 50.0f, 0.0f };
 
 	//local copy of the game scene (so code can change it during gameplay):
@@ -35,9 +37,13 @@ struct PlayMode : Mode {
 	struct Player {
 		Tank tank_;
 
+		float power_;
+
 		//camera is at player's head and will be pitched by mouse up/down motion:
 		Scene::Camera *camera = nullptr;
 
 		Player(const glm::vec3& initial_pos, Scene& scene);
+
+		void PowerUp(float elapsed);
 	} player;
 };

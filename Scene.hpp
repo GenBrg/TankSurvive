@@ -24,6 +24,8 @@
 #include <vector>
 #include <unordered_map>
 
+class TankShell;
+
 struct Scene {
 	struct Transform {
 		//Transform names are useful for debugging and looking up locations in a loaded scene:
@@ -129,6 +131,7 @@ struct Scene {
 	std::list< Camera > cameras;
 	std::list< Light > lights;
 	std::list< Drawable > dynamic_drawables;
+	std::list<TankShell*> tank_shells;
 
 	//The "draw" function provides a convenient way to pass all the things in a scene to OpenGL:
 	void draw(Camera const &camera);

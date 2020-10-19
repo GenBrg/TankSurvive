@@ -1,5 +1,7 @@
 #include "Tank.hpp"
 #include "LitColorTextureProgram.hpp"
+#include "TankShell.hpp"
+#include "util.hpp"
 
 #include <glm/gtx/quaternion.hpp>
 
@@ -17,11 +19,13 @@ scene_(scene)
 	tank_turret_.pipeline = lit_color_texture_program_pipeline;
 	tank_turret_.pipeline.mesh = &tank_survive_meshes->lookup("TankTurret");
 	turret_rotation_.parent = &root_rotation_;
+	turret_rotation_.position = glm::vec3(0.0f, -0.2f, 1.5f);
 	tank_turret_.transform = &turret_rotation_;
 
 	tank_barrel_.pipeline = lit_color_texture_program_pipeline;
 	tank_barrel_.pipeline.mesh = &tank_survive_meshes->lookup("TankBarrel");
 	barrel_rotation_.parent = &turret_rotation_;
+	barrel_rotation_.position = glm::vec3(0.0f, 0.4f, 0.0f);
 	tank_barrel_.transform = &barrel_rotation_;
 
 	at_ = walkmesh->nearest_walk_point(initial_pos);
@@ -116,3 +120,24 @@ void Tank::Update(float elapsed)
 	barrel_rotation_.rotation = glm::angleAxis(barrel_pitch_, glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
+bool Tank::CanFire() const
+{
+	return std::chrono::high_resolution_clock::now() - last_fire_time > kFireCoolDown;
+}
+
+void Tank::Fire(float initial_speed)
+{
+	if (CanFire()) {
+		last_fire_time = std::chrono::high_resolution_clock::now();
+	} else {
+		return;
+	}
+
+	auto model_mat = barrel_rotation_.make_local_to_world();
+	glm::vec3 fire_position = model_mat * glm::vec4(0.0f, 3.0f, 0.0f, 1.0f);
+	glm::vec3 velocity = initial_speed * glm::normalize(fire_position - model_mat * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	
+	std::cout << "Fire: " << initial_speed << std::endl;
+
+	scene_.tank_shells.emplace_back(new TankShell(fire_position, velocity));
+}

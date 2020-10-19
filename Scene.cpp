@@ -4,6 +4,7 @@
 #include "read_write_chunk.hpp"
 #include "data_path.hpp"
 #include "LitColorTextureProgram.hpp"
+#include "TankShell.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -111,12 +112,14 @@ void Scene::draw(Camera const &camera) {
 }
 
 void Scene::draw(glm::mat4 const &world_to_clip, glm::mat4x3 const &world_to_light) {
+	for (auto tank_shell : tank_shells) {
+		tank_shell->Draw(*this);
+	}
 
 	//Iterate through all drawables, sending each one to OpenGL:
 	for (const auto &drawable : dynamic_drawables) {
 		drawable.Draw(world_to_clip, world_to_light);
 	}
-
 	dynamic_drawables.clear();
 
 	for (auto const &drawable : drawables) {
