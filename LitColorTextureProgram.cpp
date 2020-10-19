@@ -137,8 +137,9 @@ LitColorTextureProgram::LitColorTextureProgram() {
 	glUseProgram(0); //unbind program -- glUniform* calls refer to ??? now
 }
 
+
+
 LitColorTextureProgram::~LitColorTextureProgram() {
 	glDeleteProgram(program);
 	program = 0;
 }
-

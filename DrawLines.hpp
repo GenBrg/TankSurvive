@@ -24,6 +24,8 @@ struct DrawLines {
 	//draw a wireframe box corresponding to the [-1,1]^3 cube transformed by mat:
 	void draw_box(glm::mat4x3 const &mat, glm::u8vec4 const &color = glm::u8vec4(0xff));
 
+	void draw_quad(const glm::vec4& bounding_box, const glm::u8vec4& color) const;
+
 	//draw wireframe text, start at anchor, move in x direction, mat gives x and y directions for text drawing:
 	// (default character box is 1 unit high)
 	void draw_text(std::string const &text,

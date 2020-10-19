@@ -208,7 +208,10 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 			glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
 			glm::u8vec4(0xff, 0xff, 0xff, 0x00));
 
-			
+			constexpr glm::vec4 red { 1.0f, 0.0f, 0.0f, 1.0f };
+			constexpr glm::vec4 green { 0.0f, 1.0f, 0.0f, 1.0f };
+			glm::vec4 color = red + (green - red) * player.power_;
+			lines.draw_quad(glm::vec4(aspect * 0.72f, -0.92f, aspect * (0.72f + 0.2f * player.power_), -0.98f), color * 255.0f);
 		}
 
 		// glm::u8vec4 white_color { 0xff, 0xff, 0xff, 0xff };
