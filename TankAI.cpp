@@ -6,8 +6,7 @@
 #include <random>
 
 TankAI::TankAI(Scene& scene, const glm::vec3& initial_pos) :
-tank_(scene, initial_pos, false),
-scene_(scene)
+tank_(scene, initial_pos, false)
 {
 	OnMoveEnter();
 }

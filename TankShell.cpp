@@ -39,12 +39,12 @@ bool TankShell::IsColliding(const std::vector<Tank*>& tanks)
 	}
 
 	// Hit mesh
-	WalkPoint wp = walkmesh->nearest_walk_point(transform_.position);
-	glm::vec3 pt_on_walkmesh = walkmesh->to_world_point(wp);
+	WalkPoint wp = shellmesh->nearest_walk_point(transform_.position);
+	glm::vec3 pt_on_shellmesh = shellmesh->to_world_point(wp);
 	glm::vec3 pt_on_plane = transform_.position;
 	pt_on_plane.z = 0.0f;
 
-	if (glm::distance(pt_on_walkmesh, pt_on_plane) > 1.0f) {
+	if (glm::distance(pt_on_shellmesh, pt_on_plane) > 1.0f) {
 		return true;
 	}
 

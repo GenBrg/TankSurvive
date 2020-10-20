@@ -12,7 +12,6 @@ public:
 
 private:
 	Tank tank_;
-	Scene& scene_;
 
 	float move_time_ { 0.0f };
 

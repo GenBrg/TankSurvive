@@ -311,10 +311,12 @@ std::string WalkPoint::ToString() const
 }
 
 WalkMesh const *walkmesh = nullptr;
+WalkMesh const *shellmesh = nullptr;
 
 Load< WalkMeshes > tank_survive_walkmeshes(LoadTagDefault, []() -> WalkMeshes const * {
 	WalkMeshes *ret = new WalkMeshes(data_path("tank_survive.w"));
 	walkmesh = &ret->lookup("WalkMesh");
+	shellmesh = &ret->lookup("ShellMesh");
 	return ret;
 });
 

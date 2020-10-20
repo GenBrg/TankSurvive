@@ -110,3 +110,4 @@ struct WalkMeshes {
 };
 
 extern WalkMesh const *walkmesh;
+extern WalkMesh const *shellmesh;
