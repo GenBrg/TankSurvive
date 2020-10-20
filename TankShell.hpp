@@ -4,11 +4,17 @@
 
 #include <glm/glm.hpp>
 
+#include <vector>
+
+class Tank;
+
 class TankShell {
 	public:
 		TankShell(const glm::vec3& initial_pos, const glm::vec3& initial_velocity);
-		bool Update(float elapsed);
+		void Update(float elapsed);
 		void Draw(Scene& scene);
+		bool IsColliding(const std::vector<Tank*>& tanks);
+		glm::vec3 GetPosition() const { return transform_.position; }
 
 	private:
 		Scene::Transform transform_;

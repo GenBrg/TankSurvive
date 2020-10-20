@@ -127,6 +127,9 @@ COMMON_NAMES =
 	util
 	Tank
 	TankShell
+	Explosion
+	TankAI
+	CollisionDetection
 	;
 
 LOCATE_TARGET = objs ; #put objects in 'objs' directory

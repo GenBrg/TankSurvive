@@ -5,6 +5,8 @@
 #include "data_path.hpp"
 #include "LitColorTextureProgram.hpp"
 #include "TankShell.hpp"
+#include "Explosion.hpp"
+#include "TankAI.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -114,6 +116,14 @@ void Scene::draw(Camera const &camera) {
 void Scene::draw(glm::mat4 const &world_to_clip, glm::mat4x3 const &world_to_light) {
 	for (auto tank_shell : tank_shells) {
 		tank_shell->Draw(*this);
+	}
+
+	for (auto enemy_tank : enemy_tanks) {
+		enemy_tank->Draw();
+	}
+
+	for (auto explosion : explosions) {
+		explosion->Draw();
 	}
 
 	//Iterate through all drawables, sending each one to OpenGL:

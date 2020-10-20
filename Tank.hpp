@@ -2,6 +2,7 @@
 
 #include "Scene.hpp"
 #include "WalkMesh.hpp"
+#include "CollisionDetection.hpp"
 
 #include <chrono>
 
@@ -29,6 +30,8 @@ class Tank {
 		float target_turret_yaw_ { 0.0f };
 		float target_barrel_pitch_ { 0.0f };
 
+		float hp_ { 100.0f };
+
 		std::chrono::high_resolution_clock::time_point last_fire_time;
 
 	public:
@@ -40,7 +43,7 @@ class Tank {
 		inline static constexpr float kMaxBarrelPitch = glm::radians(15.0f);
 		inline static constexpr float kMinBarrelPitch = glm::radians(0.0f);
 
-		Tank(Scene& scene, const glm::vec3& initial_pos);
+		Tank(Scene& scene, const glm::vec3& initial_pos, bool is_player);
 
 		void TargetTurret(float target_yaw) { target_turret_yaw_ = target_yaw; }
 		void AdjustBarrel(float target_pitch) { target_barrel_pitch_ = glm::clamp(target_pitch, kMinBarrelPitch, kMaxBarrelPitch); }
@@ -60,6 +63,10 @@ class Tank {
 		void Update(float elapsed);
 		void Draw();
 
+		void CollisionResolution(Tank* tank);
+		bool IsPointInTank(const glm::vec3& point);
+
 		glm::vec3 GetUpVector() const { return walkmesh->to_world_smooth_normal(at_); }
 		glm::vec3 GetFaceVector() const;
+		ConvexPolygon GetBoundingBox() const;
 };

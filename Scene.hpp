@@ -25,6 +25,8 @@
 #include <unordered_map>
 
 class TankShell;
+class Explosion;
+class TankAI;
 
 struct Scene {
 	struct Transform {
@@ -132,6 +134,8 @@ struct Scene {
 	std::list< Light > lights;
 	std::list< Drawable > dynamic_drawables;
 	std::list<TankShell*> tank_shells;
+	std::list<Explosion*> explosions;
+	std::list<TankAI*> enemy_tanks;
 
 	//The "draw" function provides a convenient way to pass all the things in a scene to OpenGL:
 	void draw(Camera const &camera);

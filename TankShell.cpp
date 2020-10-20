@@ -1,7 +1,8 @@
 #include "TankShell.hpp"
 #include "LitColorTextureProgram.hpp"
-
+#include "WalkMesh.hpp"
 #include "util.hpp"
+#include "PlayMode.hpp"
 
 #include <glm/gtx/quaternion.hpp>
 
@@ -18,7 +19,7 @@ velocity_(initial_velocity)
 	rotation_.rotation = glm::rotation(glm::vec3(0.0f, 1.0f, 0.0f), glm::normalize(velocity_));
 }
 
-bool TankShell::Update(float elapsed)
+void TankShell::Update(float elapsed)
 {
 	glm::vec3 old_velocity = velocity_;
 	velocity_ += kGravity * elapsed;
@@ -28,16 +29,31 @@ bool TankShell::Update(float elapsed)
 
 	// Update shell rotation
 	rotation_.rotation = glm::rotation(glm::vec3(0.0f, 1.0f, 0.0f), glm::normalize(velocity_));
+}
 
-	// Collision detection
+bool TankShell::IsColliding(const std::vector<Tank*>& tanks)
+{
 	// Hit ground
 	if (transform_.position.z <= 0.0f) {
 		return true;
 	}
 
 	// Hit mesh
+	WalkPoint wp = walkmesh->nearest_walk_point(transform_.position);
+	glm::vec3 pt_on_walkmesh = walkmesh->to_world_point(wp);
+	glm::vec3 pt_on_plane = transform_.position;
+	pt_on_plane.z = 0.0f;
+
+	if (glm::distance(pt_on_walkmesh, pt_on_plane) > 1.0f) {
+		return true;
+	}
 
 	// Hit tank
+	for (auto tank : tanks) {
+		if (tank->IsPointInTank(transform_.position)) {
+			return true;
+		}
+	}
 
 	return false;
 }
