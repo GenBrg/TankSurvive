@@ -1,18 +1,21 @@
-# (TODO: your game's title)
+# Tank Survive
 
-Author: (TODO: your name)
+Author: Jiasheng Zhou \<jiashen2@andrew.cmu.edu\>
 
-Design: (TODO: In two sentences or fewer, describe what is new and interesting about your game.)
+Design: In this game, you need to survive in the battle with enemy tanks.
 
 Screen Shot:
 
 ![Screen Shot](screenshot.png)
 
-How To Play:
+How To Play:\
+W,S: Move tank forward and backward\
+A,D: Turn tank left and right\
+Mouse: Aim\
+LMB: Power up and fire
 
-(TODO: describe the controls and (if needed) goals/strategy.)
-
-Sources: (TODO: list a source URL for any assets you did not create yourself. Make sure you have a license for the asset.)
+Sources: \
+explosion.wav: https://freesound.org/people/Bekir_VirtualDJ/sounds/132833/ 
 
 This game was built with [NEST](NEST.md).
 
