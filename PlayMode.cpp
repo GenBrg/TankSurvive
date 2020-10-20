@@ -17,43 +17,24 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include <random>
+#include <sstream>
 
 Load<Sound::Sample> explode_sfx_sample(LoadTagDefault, []() -> Sound::Sample const * {
 	return new Sound::Sample(data_path("explosion.wav"));
 });
 
+Load<Sound::Sample> win_sfx_sample(LoadTagDefault, []() -> Sound::Sample const * {
+	return new Sound::Sample(data_path("win.wav"));
+});
+
+Load<Sound::Sample> lose_sfx_sample(LoadTagDefault, []() -> Sound::Sample const * {
+	return new Sound::Sample(data_path("lose.wav"));
+});
+
 PlayMode::PlayMode() : scene(*tank_survive_scene),
 					   player(kPlayerInitialPos, scene)
 {
-	std::random_device rd;
-	std::mt19937 mt(rd());
-	std::vector<glm::vec3> generated_positions(3);
-	generated_positions.push_back(kPlayerInitialPos);
-
-	for (int i = 0; i < 2; ++i)
-	{
-		glm::vec3 spawn_pos;
-
-		while (true)
-		{
-			float x = std::uniform_real_distribution<float>(-70.0f, 40.0f)(mt);
-			float y = std::uniform_real_distribution<float>(-50.0f, 30.0f)(mt);
-			WalkPoint wp = walkmesh->nearest_walk_point(glm::vec3(x, y, 0.0f));
-			spawn_pos = walkmesh->to_world_point(wp);
-
-			for (const auto &generated_position : generated_positions)
-			{
-				if (glm::distance(generated_position, spawn_pos) < 20.0f)
-				{
-					continue;
-				}
-			}
-			generated_positions.push_back(spawn_pos);
-			break;
-		}
-
-		scene.enemy_tanks.push_back(new TankAI(scene, spawn_pos));
-	}
+	Reset();
 }
 
 PlayMode::~PlayMode()
@@ -290,6 +271,16 @@ void PlayMode::update(float elapsed)
 	right.downs = 0;
 	up.downs = 0;
 	down.downs = 0;
+
+	if (player.tank_.GetHp() <= 0.0f) {
+		Sound::play(*lose_sfx_sample);
+		++lose;
+		Reset();
+	} else if (scene.enemy_tanks.empty()) {
+		Sound::play(*win_sfx_sample);
+		++win;
+		Reset();
+	}
 }
 
 void PlayMode::draw(glm::uvec2 const &drawable_size)
@@ -356,9 +347,20 @@ void PlayMode::draw(glm::uvec2 const &drawable_size)
 						glm::vec3(-0.5f * aspect + ofs, 0.8f + ofs, 0.0),
 						glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
 						glm::u8vec4(0xff, 0xff, 0xff, 0x00));
-
 		glm::vec4 color = red + (green - red) * player.tank_.GetHpPercentage();
 		lines.draw_quad(glm::vec4(aspect * -0.35f, 0.83f, aspect * (-0.4f + 0.35f * player.tank_.GetHpPercentage()), 0.88f), color * 255.0f);
+
+		std::ostringstream oss;
+		oss << "Win: " << win << " Lose: " << lose << " Enemy: " << scene.enemy_tanks.size();
+		lines.draw_text(oss.str(),
+						glm::vec3(0.5f * aspect, 0.8f, 0.0),
+						glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
+						glm::u8vec4(0x00, 0x00, 0x00, 0x00));
+
+		lines.draw_text(oss.str(),
+						glm::vec3(0.5f * aspect + ofs, 0.8f + ofs, 0.0),
+						glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
+						glm::u8vec4(0xff, 0xff, 0xff, 0x00));
 	}
 	GL_ERRORS();
 }
@@ -392,7 +394,55 @@ void PlayMode::Player::PowerUp(float elapsed)
 	}
 }
 
-void PlayMode::Initialize()
+void PlayMode::Reset()
 {
+	static std::random_device rd;
+	static std::mt19937 mt(rd());
 
+	std::vector<glm::vec3> generated_positions(6);
+
+	auto gen_pos = [&]() {
+		while (true)
+		{
+			glm::vec3 spawn_pos;
+			float x = std::uniform_real_distribution<float>(-70.0f, 40.0f)(mt);
+			float y = std::uniform_real_distribution<float>(-50.0f, 30.0f)(mt);
+			WalkPoint wp = walkmesh->nearest_walk_point(glm::vec3(x, y, 0.0f));
+			spawn_pos = walkmesh->to_world_point(wp);
+
+			for (const auto &generated_position : generated_positions)
+			{
+				if (glm::distance(generated_position, spawn_pos) < 20.0f)
+				{
+					continue;
+				}
+			}
+			generated_positions.push_back(spawn_pos);
+			return spawn_pos;
+		}
+	};
+
+	for (auto tank_shell : scene.tank_shells) {
+		delete tank_shell;
+	}
+	scene.tank_shells.clear();
+
+	for (auto explosion : scene.explosions) {
+		delete explosion;
+	}
+	scene.explosions.clear();
+
+	for (auto enemy_tank : scene.enemy_tanks) {
+		delete enemy_tank;
+	}
+	scene.enemy_tanks.clear();
+
+	player.tank_.Reset(gen_pos());
+
+	int tank_num = win - lose;
+
+	for (int i = 0; i < glm::clamp(tank_num, 1, 5); ++i)
+	{
+		scene.enemy_tanks.push_back(new TankAI(scene, gen_pos()));
+	}
 }

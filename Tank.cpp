@@ -32,8 +32,7 @@ scene_(scene)
 	barrel_rotation_.position = glm::vec3(0.0f, 0.4f, 0.0f);
 	tank_barrel_.transform = &barrel_rotation_;
 
-	at_ = walkmesh->nearest_walk_point(initial_pos);
-	root_transform_.position = walkmesh->to_world_point(at_);
+	Reset(initial_pos);
 }
 
 void Tank::Draw() {
@@ -198,4 +197,20 @@ void Tank::ApplyDamage(const glm::vec3& origin, float power, float radius)
 glm::vec3 Tank::GetFirePosition() const
 {
 	return barrel_rotation_.make_local_to_world() * glm::vec4(0.0f, 4.0f, 0.0f, 1.0f);
+}
+
+void Tank::Reset(const glm::vec3& initial_pos)
+{
+	at_ = walkmesh->nearest_walk_point(initial_pos);
+	root_transform_.position = walkmesh->to_world_point(at_);
+
+	hp_ = kMaxHP;
+	body_yaw_ = 0.0f;
+	turret_yaw_ = 0.0f;
+	barrel_pitch_ = 0.0f;
+	velocity_ = 0.0f;
+	rotation_force_ = 0.0f;
+	external_force_ = 0.0f;
+	target_turret_yaw_ = 0.0f;
+	target_barrel_pitch_ = 0.0f;
 }

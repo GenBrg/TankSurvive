@@ -79,4 +79,6 @@ class Tank {
 		float GetTotalYaw() const { return body_yaw_ + turret_yaw_; }
 		float GetBarrelPitch() const { return barrel_pitch_; }
 		glm::vec3 GetFirePosition() const;
+
+		void Reset(const glm::vec3& initial_pos);
 };

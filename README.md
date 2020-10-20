@@ -15,7 +15,9 @@ Mouse: Aim\
 LMB: Power up and fire
 
 Sources: \
-explosion.wav: https://freesound.org/people/Bekir_VirtualDJ/sounds/132833/ 
+explosion.wav: https://freesound.org/people/Bekir_VirtualDJ/sounds/132833/ \
+win.wav: https://freesound.org/people/qubodup/sounds/442943/ \
+lose.wav: https://freesound.org/people/vox_artist/sounds/512159/ \
 
 This game was built with [NEST](NEST.md).
 

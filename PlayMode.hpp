@@ -33,6 +33,9 @@ struct PlayMode : Mode {
 	//local copy of the game scene (so code can change it during gameplay):
 	Scene scene;
 
+	int lose {0};
+	int win {0};
+
 	//player info:
 	struct Player {
 		Tank tank_;
@@ -47,5 +50,5 @@ struct PlayMode : Mode {
 		void PowerUp(float elapsed);
 	} player;
 
-	void Initialize();
+	void Reset();
 };
