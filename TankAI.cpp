@@ -122,7 +122,7 @@ void TankAI::SubMovement::Initialize()
 {
 	static std::random_device rd;
 	static std::mt19937 mt(rd());
-	static std::uniform_int<int> dice_dist(0, 2);
+	static std::uniform_int_distribution<int> dice_dist(0, 2);
 	static std::uniform_real_distribution<float> time_dist(1.0f, 3.0f);
 
 	time_ = time_dist(mt);

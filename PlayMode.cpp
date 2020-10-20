@@ -263,7 +263,7 @@ void PlayMode::update(float elapsed)
 		if ((*it)->GetTank()->GetHp() <= 0.0f)
 		{
 			Explosion* explosion = new Explosion((*it)->GetTank()->GetPosition(), scene, 20.0f, 10.0f);
-			auto dd = std::remove(all_tanks.begin(), all_tanks.end(), (*it)->GetTank());
+			static_cast<void>(std::remove(all_tanks.begin(), all_tanks.end(), (*it)->GetTank()));
 			explosion->ApplyDamage(all_tanks);
 			Sound::play_3D(*explode_sfx_sample, 100.0f, (*it)->GetTank()->GetPosition(), 50.0f);
 			scene.explosions.emplace_back(explosion);

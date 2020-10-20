@@ -4,9 +4,9 @@
 #include "Tank.hpp"
 
 Explosion::Explosion(const glm::vec3& pos, Scene& scene, float power, float radius) :
-scene_(scene),
 power_(power),
-radius_(radius)
+radius_(radius),
+scene_(scene)
 {
 	drawable_.pipeline = lit_color_texture_program_pipeline;
 	drawable_.pipeline.mesh = &tank_survive_meshes->lookup("Explosion");

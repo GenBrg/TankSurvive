@@ -18,7 +18,7 @@ float CollisionDetection::Static2DSAT(const ConvexPolygon& cp1, const ConvexPoly
 		float min_r = std::numeric_limits<float>::max();
 		float max_r = -std::numeric_limits<float>::max();
 
-		for (int i = 0; i < cp.size(); ++i) {
+		for (size_t i = 0; i < cp.size(); ++i) {
 			float projected = glm::dot(cp[i], normal);
 			min_r = std::min(min_r, projected);
 			max_r = std::max(max_r, projected);
@@ -35,7 +35,7 @@ float CollisionDetection::Static2DSAT(const ConvexPolygon& cp1, const ConvexPoly
 		const ConvexPolygon* pcp1 = (k == 0) ? &cp1 : &cp2;
 		const ConvexPolygon* pcp2 = (k == 0) ? &cp2 : &cp1;
 
-		for (int i = 0; i < pcp1->size(); ++i) {
+		for (size_t i = 0; i < pcp1->size(); ++i) {
 			glm::vec2 normal = get_line_normal((*pcp1)[i], (*pcp1)[(i + 1) % pcp1->size()]);
 			glm::vec2 cp1_line = get_projected_line(normal, *pcp1);
 			glm::vec2 cp2_line = get_projected_line(normal, *pcp2);
@@ -67,7 +67,7 @@ bool CollisionDetection::PointInConvexPolygon(const glm::vec2& point, const Conv
 
 	bool to_left = ToLeft(polygon[0], polygon[1], point);
 
-	for (int i = 1; i < polygon.size(); ++i) {
+	for (size_t i = 1; i < polygon.size(); ++i) {
 		if (to_left != ToLeft(polygon[i], polygon[(i + 1) % polygon.size()], point)) {
 			return false;
 		}
