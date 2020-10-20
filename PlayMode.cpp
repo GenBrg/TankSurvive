@@ -251,6 +251,26 @@ void PlayMode::update(float elapsed)
 		}
 	}
 
+	// Destroy tanks
+	for (auto it = scene.enemy_tanks.begin(); it != scene.enemy_tanks.end();)
+	{
+		if ((*it)->GetTank()->GetHp() <= 0.0f)
+		{
+			Explosion* explosion = new Explosion((*it)->GetTank()->GetPosition(), scene, 20.0f, 10.0f);
+			auto dd = std::remove(all_tanks.begin(), all_tanks.end(), (*it)->GetTank());
+			explosion->ApplyDamage(all_tanks);
+			scene.explosions.emplace_back(explosion);
+			auto tmp = it;
+			++it;
+			delete *tmp;
+			scene.enemy_tanks.erase(tmp);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
 	if (isPoweringUp)
 	{
 		player.PowerUp(elapsed);
