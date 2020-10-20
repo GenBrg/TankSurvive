@@ -149,8 +149,9 @@ void Tank::Fire(float initial_speed)
 		return;
 	}
 
+	initial_speed = glm::clamp(initial_speed, 20.0f, 120.0f);
 	auto model_mat = barrel_rotation_.make_local_to_world();
-	glm::vec3 fire_position = model_mat * glm::vec4(0.0f, 4.0f, 0.0f, 1.0f);
+	glm::vec3 fire_position = GetFirePosition();
 	glm::vec3 velocity = initial_speed * glm::normalize(fire_position - model_mat * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	scene_.tank_shells.emplace_back(new TankShell(fire_position, velocity));
@@ -192,4 +193,9 @@ void Tank::ApplyDamage(const glm::vec3& origin, float power, float radius)
 	} else if (dist <= kBodyRadius + radius) {
 		hp_ -= (power * kBodyRadius * kBodyRadius) / (dist * dist);
 	}
+}
+
+glm::vec3 Tank::GetFirePosition() const
+{
+	return barrel_rotation_.make_local_to_world() * glm::vec4(0.0f, 4.0f, 0.0f, 1.0f);
 }

@@ -74,4 +74,9 @@ class Tank {
 		ConvexPolygon GetBoundingBox() const;
 		float GetHp() const { return hp_; }
 		float GetHpPercentage() const { return hp_ / kMaxHP; }
+		float GetBodyYaw() const { return body_yaw_; }
+		float GetTurretYaw() const { return turret_yaw_; }
+		float GetTotalYaw() const { return body_yaw_ + turret_yaw_; }
+		float GetBarrelPitch() const { return barrel_pitch_; }
+		glm::vec3 GetFirePosition() const;
 };

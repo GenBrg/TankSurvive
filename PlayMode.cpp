@@ -211,7 +211,7 @@ void PlayMode::update(float elapsed)
 
 	for (auto enemy_tank : scene.enemy_tanks)
 	{
-		enemy_tank->Update(elapsed);
+		enemy_tank->Update(elapsed, player.tank_.GetPosition());
 		all_tanks.push_back(enemy_tank->GetTank());
 	}
 
