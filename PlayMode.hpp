@@ -46,4 +46,6 @@ struct PlayMode : Mode {
 
 		void PowerUp(float elapsed);
 	} player;
+
+	void Initialize();
 };

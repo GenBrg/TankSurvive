@@ -11,11 +11,16 @@
 #include "TankShell.hpp"
 #include "Explosion.hpp"
 #include "TankAI.hpp"
+#include "Sound.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 #include <random>
+
+Load<Sound::Sample> explode_sfx_sample(LoadTagDefault, []() -> Sound::Sample const * {
+	return new Sound::Sample(data_path("explosion.wav"));
+});
 
 PlayMode::PlayMode() : scene(*tank_survive_scene),
 					   player(kPlayerInitialPos, scene)
@@ -240,6 +245,7 @@ void PlayMode::update(float elapsed)
 			Explosion* explosion = new Explosion((*it)->GetPosition(), scene, 20.0f, 5.0f);
 			explosion->ApplyDamage(all_tanks);
 			scene.explosions.emplace_back(explosion);
+			Sound::play_3D(*explode_sfx_sample, 20.0f, (*it)->GetPosition(), 30.0f);
 			auto tmp = it;
 			++it;
 			delete *tmp;
@@ -259,6 +265,7 @@ void PlayMode::update(float elapsed)
 			Explosion* explosion = new Explosion((*it)->GetTank()->GetPosition(), scene, 20.0f, 10.0f);
 			auto dd = std::remove(all_tanks.begin(), all_tanks.end(), (*it)->GetTank());
 			explosion->ApplyDamage(all_tanks);
+			Sound::play_3D(*explode_sfx_sample, 100.0f, (*it)->GetTank()->GetPosition(), 50.0f);
 			scene.explosions.emplace_back(explosion);
 			auto tmp = it;
 			++it;
@@ -270,6 +277,8 @@ void PlayMode::update(float elapsed)
 			++it;
 		}
 	}
+
+	Sound::listener.set_position_right(player.tank_.GetPosition(), glm::normalize(glm::cross(player.tank_.GetFaceVector(), player.tank_.GetUpVector())));
 
 	if (isPoweringUp)
 	{
@@ -381,4 +390,9 @@ void PlayMode::Player::PowerUp(float elapsed)
 		power_ = -power_;
 		inc = 0.5f;
 	}
+}
+
+void PlayMode::Initialize()
+{
+
 }
