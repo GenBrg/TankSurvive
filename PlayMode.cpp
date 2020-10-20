@@ -237,7 +237,9 @@ void PlayMode::update(float elapsed)
 		(*it)->Update(elapsed);
 		if ((*it)->IsColliding(all_tanks))
 		{
-			scene.explosions.emplace_back(new Explosion((*it)->GetPosition(), scene));
+			Explosion* explosion = new Explosion((*it)->GetPosition(), scene, 20.0f, 5.0f);
+			explosion->ApplyDamage(all_tanks);
+			scene.explosions.emplace_back(explosion);
 			auto tmp = it;
 			++it;
 			delete *tmp;
@@ -296,6 +298,8 @@ void PlayMode::draw(glm::uvec2 const &drawable_size)
 
 		constexpr float H = 0.09f;
 		float ofs = 2.0f / drawable_size.y;
+		constexpr glm::vec4 red{1.0f, 0.0f, 0.0f, 1.0f};
+		constexpr glm::vec4 green{0.0f, 1.0f, 0.0f, 1.0f};
 
 		// Power bar
 		if (isPoweringUp)
@@ -310,11 +314,22 @@ void PlayMode::draw(glm::uvec2 const &drawable_size)
 							glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
 							glm::u8vec4(0xff, 0xff, 0xff, 0x00));
 
-			constexpr glm::vec4 red{1.0f, 0.0f, 0.0f, 1.0f};
-			constexpr glm::vec4 green{0.0f, 1.0f, 0.0f, 1.0f};
 			glm::vec4 color = red + (green - red) * player.power_;
 			lines.draw_quad(glm::vec4(aspect * 0.72f, -0.92f, aspect * (0.72f + 0.2f * player.power_), -0.98f), color * 255.0f);
 		}
+
+		lines.draw_text("HP: ",
+						glm::vec3(-0.5f * aspect, 0.8f, 0.0),
+						glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
+						glm::u8vec4(0x00, 0x00, 0x00, 0x00));
+
+		lines.draw_text("HP: ",
+						glm::vec3(-0.5f * aspect + ofs, 0.8f + ofs, 0.0),
+						glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
+						glm::u8vec4(0xff, 0xff, 0xff, 0x00));
+
+		glm::vec4 color = red + (green - red) * player.tank_.GetHpPercentage();
+		lines.draw_quad(glm::vec4(aspect * -0.35f, 0.83f, aspect * (-0.4f + 0.35f * player.tank_.GetHpPercentage()), 0.88f), color * 255.0f);
 	}
 	GL_ERRORS();
 }

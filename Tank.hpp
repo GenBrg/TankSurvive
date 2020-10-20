@@ -30,7 +30,7 @@ class Tank {
 		float target_turret_yaw_ { 0.0f };
 		float target_barrel_pitch_ { 0.0f };
 
-		float hp_ { 100.0f };
+		float hp_ { kMaxHP };
 
 		std::chrono::high_resolution_clock::time_point last_fire_time;
 
@@ -42,6 +42,7 @@ class Tank {
 		inline static constexpr float kBarrelRotationSpeed = glm::radians(15.0f);
 		inline static constexpr float kMaxBarrelPitch = glm::radians(15.0f);
 		inline static constexpr float kMinBarrelPitch = glm::radians(0.0f);
+		inline static constexpr float kMaxHP = 100.0f;
 
 		Tank(Scene& scene, const glm::vec3& initial_pos, bool is_player);
 
@@ -65,8 +66,12 @@ class Tank {
 
 		void CollisionResolution(Tank* tank);
 		bool IsPointInTank(const glm::vec3& point);
+		void ApplyDamage(const glm::vec3& origin, float power, float radius);
 
 		glm::vec3 GetUpVector() const { return walkmesh->to_world_smooth_normal(at_); }
 		glm::vec3 GetFaceVector() const;
+		glm::vec3 GetPosition() const { return root_transform_.position; }
 		ConvexPolygon GetBoundingBox() const;
+		float GetHp() const { return hp_; }
+		float GetHpPercentage() const { return hp_ / kMaxHP; }
 };

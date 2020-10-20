@@ -150,7 +150,7 @@ void Tank::Fire(float initial_speed)
 	}
 
 	auto model_mat = barrel_rotation_.make_local_to_world();
-	glm::vec3 fire_position = model_mat * glm::vec4(0.0f, 3.0f, 0.0f, 1.0f);
+	glm::vec3 fire_position = model_mat * glm::vec4(0.0f, 4.0f, 0.0f, 1.0f);
 	glm::vec3 velocity = initial_speed * glm::normalize(fire_position - model_mat * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	scene_.tank_shells.emplace_back(new TankShell(fire_position, velocity));
@@ -181,4 +181,15 @@ bool Tank::IsPointInTank(const glm::vec3& point)
 	}
 
 	return CollisionDetection::PointInConvexPolygon(point, GetBoundingBox());
+}
+
+void Tank::ApplyDamage(const glm::vec3& origin, float power, float radius)
+{
+	constexpr float kBodyRadius = 5.0f;
+	float dist = glm::distance(origin, root_transform_.position);
+	if (dist <= kBodyRadius) {
+		hp_ -= power;
+	} else if (dist <= kBodyRadius + radius) {
+		hp_ -= (power * kBodyRadius * kBodyRadius) / (dist * dist);
+	}
 }
